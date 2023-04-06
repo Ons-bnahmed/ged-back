@@ -1,5 +1,3 @@
-//FilesStorageService helps us to initialize storage, save new file, load file, get list of Files’ info, delete all files.
-
 package com.mss.ged.services;
 
 import org.springframework.web.multipart.MultipartFile;

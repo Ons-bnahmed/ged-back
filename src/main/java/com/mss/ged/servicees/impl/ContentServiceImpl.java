@@ -35,4 +35,9 @@ public class ContentServiceImpl implements ContentService {
 		return contentRepository.save(contentUpdate);
 	}
 
+	@Override
+	public Content findContentByUuid(String uuid) {
+		return contentRepository.findByUuid(uuid);
+	}
+
 }

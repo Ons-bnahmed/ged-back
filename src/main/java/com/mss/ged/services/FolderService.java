@@ -6,6 +6,4 @@ public interface FolderService {
 
 	Folder save(Folder folder);
 
-	
-
 }

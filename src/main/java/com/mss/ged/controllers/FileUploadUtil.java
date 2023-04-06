@@ -6,7 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 import org.springframework.web.multipart.MultipartFile;
 import com.mss.ged.entities.Content;
 
@@ -15,7 +15,7 @@ public class FileUploadUtil {
 	public static void saveFile(Content content, MultipartFile multipartfile) throws IOException {
 		
 		
-		OffsetDateTime currentDate = content.getCreatedAt();
+		LocalDateTime currentDate = content.getCreatedAt();
 		String year = String.valueOf(currentDate.getYear());
 		String month = String.format("%02d", currentDate.getMonthValue());
 		String day = String.format("%02d", currentDate.getDayOfMonth());

@@ -1,13 +1,13 @@
 package com.mss.ged.entities;
 
 import java.io.Serializable;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
+import java.time.LocalDateTime;
 import java.util.UUID;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
@@ -34,14 +34,15 @@ public abstract class BaseEntity<ID> implements Serializable {
 	@LastModifiedBy
 	private String lastModifiedBy;
 
-	
+	@JsonIgnore
 	@Column(nullable = true, columnDefinition = "TIMESTAMP")
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss.SSSZ", timezone = "UTC")
-	protected OffsetDateTime createdAt;
+	protected LocalDateTime createdAt;
 
+	@JsonIgnore
 	@Column(nullable = true, columnDefinition = "TIMESTAMP")
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss.SSSZ", timezone = "UTC")
-	protected OffsetDateTime updatedAt;
+	protected LocalDateTime updatedAt;
 
 	@Column(unique = true, nullable = false)
 	private String uuid;
@@ -87,33 +88,33 @@ public abstract class BaseEntity<ID> implements Serializable {
 	}
 
 	// CreatedAt
-	public OffsetDateTime getCreatedAt() {
+	public LocalDateTime getCreatedAt() {
 		return createdAt;
 	}
 
-	public void setCreatedAt(OffsetDateTime createdAt) {
+	public void setCreatedAt(LocalDateTime createdAt) {
 		this.createdAt = createdAt;
 	}
 
 	// UpdatedAt
-	public OffsetDateTime getUpdatedAt() {
+	public LocalDateTime getUpdatedAt() {
 		return updatedAt;
 	}
 
-	public void setUpdatedAt(OffsetDateTime updatedAt) {
+	public void setUpdatedAt(LocalDateTime updatedAt) {
 		this.updatedAt = updatedAt;
 	}
 
 	@PrePersist
 	protected void onCreatse() {
 		this.uuid = UUID.randomUUID().toString();
-		this.updatedAt = this.createdAt = OffsetDateTime.now(ZoneOffset.UTC);
+		this.updatedAt = this.createdAt = LocalDateTime.now();
 
 	}
 
 	@PreUpdate
 	protected void onUpdate() {
-		updatedAt = OffsetDateTime.now(ZoneOffset.UTC);
+		updatedAt = LocalDateTime.now();
 	}
 	
 

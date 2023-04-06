@@ -11,6 +11,8 @@ public interface ContentService {
 
 	Content findContentById(Long id);
 	
+	Content findContentByUuid(String uuid);
+	
 	void deleteContent(Long id);
 
 	Content updatedContent(Long id, Content content);

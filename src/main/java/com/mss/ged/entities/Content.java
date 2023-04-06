@@ -52,6 +52,8 @@ public class Content extends BaseContent {
 	public Object getContentType() {
 		return null;
 	}
-	
+	public byte[] getData() {
+		return null;
+	}
 	 
 }

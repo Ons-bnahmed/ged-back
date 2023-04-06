@@ -7,6 +7,6 @@ import com.mss.ged.entities.Content;
 @Repository
 public interface ContentRepository extends JpaRepository <Content, Long>{
 
-
+	Content findByUuid(String uuid);
 
 }
