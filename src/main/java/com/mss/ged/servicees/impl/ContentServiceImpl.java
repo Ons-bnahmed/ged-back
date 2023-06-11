@@ -1,8 +1,10 @@
 package com.mss.ged.servicees.impl;
 
 import java.util.List;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import com.mss.ged.dtos.RenameRequest;
 import com.mss.ged.entities.Content;
 import com.mss.ged.repositories.ContentRepository;
 import com.mss.ged.services.ContentService;
@@ -38,6 +40,17 @@ public class ContentServiceImpl implements ContentService {
 	@Override
 	public Content findContentByUuid(String uuid) {
 		return contentRepository.findByUuid(uuid);
+	}
+	
+	@Override
+	public Content renameContent(RenameRequest data, Long id)
+	{
+		Optional<Content> dataFromDb= this.contentRepository.findById(id);
+		if(!dataFromDb.isPresent())
+		return null ;
+		Content content = dataFromDb.get();
+		content.setName(data.getFileName());
+		return this.contentRepository.save(content);
 	}
 
 }

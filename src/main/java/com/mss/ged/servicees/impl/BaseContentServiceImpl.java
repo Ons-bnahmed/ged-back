@@ -1,5 +1,6 @@
 package com.mss.ged.servicees.impl;
 
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.mss.ged.entities.BaseContent;
@@ -13,7 +14,7 @@ public class BaseContentServiceImpl implements BaseContentSevice {
 	private BaseContentRepository repository;
 
 	public BaseContent create(BaseContent baseContent) {
-		return null;
+		return repository.saveAndFlush(baseContent);
 	}
 
 	@Override
@@ -38,6 +39,16 @@ public class BaseContentServiceImpl implements BaseContentSevice {
 
 	public BaseContent updateById(BaseContent baseContent) {
 		return repository.save(baseContent);
+	}
+
+	@Override
+	public List<? extends BaseContent> findByParentId(Long parentId) {
+		return repository.findByParentId(parentId);
+	}
+
+	@Override
+	public List<? extends BaseContent> findByParentIsNull() {
+		return repository.findAll();
 	}
 
 }

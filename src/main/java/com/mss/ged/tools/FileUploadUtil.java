@@ -1,4 +1,4 @@
-package com.mss.ged.controllers;
+package com.mss.ged.tools;
 
 import java.io.IOException;
 import java.io.InputStream;

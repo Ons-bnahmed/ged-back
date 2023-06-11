@@ -1,5 +1,6 @@
 package com.mss.ged.services;
 
+import java.util.List;
 import com.mss.ged.entities.BaseContent;
 
 public interface BaseContentSevice {
@@ -13,5 +14,9 @@ public interface BaseContentSevice {
 	BaseContent updateById(BaseContent baseContent);
 
 	BaseContent save(BaseContent content);
+	
+	List<? extends BaseContent> findByParentId(Long parentId);
+	
+	List<? extends BaseContent> findByParentIsNull();
 
 }

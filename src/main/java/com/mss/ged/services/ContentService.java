@@ -2,6 +2,7 @@ package com.mss.ged.services;
 
 import java.util.List;
 
+import com.mss.ged.dtos.RenameRequest;
 import com.mss.ged.entities.Content;
 
 
@@ -16,4 +17,6 @@ public interface ContentService {
 	void deleteContent(Long id);
 
 	Content updatedContent(Long id, Content content);
+
+	Content renameContent(RenameRequest data, Long id);
 }

@@ -9,4 +9,6 @@ public interface ContentRepository extends JpaRepository <Content, Long>{
 
 	Content findByUuid(String uuid);
 
+	
+
 }

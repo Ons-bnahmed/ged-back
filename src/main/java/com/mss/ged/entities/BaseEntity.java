@@ -46,9 +46,7 @@ public abstract class BaseEntity<ID> implements Serializable {
 
 	@Column(unique = true, nullable = false)
 	private String uuid;
-	// Getters and setters
-
-	// Id
+	
 	public ID getId() {
 		return id;
 	}
