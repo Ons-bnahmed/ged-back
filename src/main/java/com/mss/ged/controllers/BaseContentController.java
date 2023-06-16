@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.mss.ged.entities.BaseContent;
 import com.mss.ged.services.BaseContentSevice;
@@ -29,5 +30,9 @@ public class BaseContentController {
     public List<? extends BaseContent> getBaseContentsByParentId(@PathVariable Long parentId) {
         return baseContentService.findByParentId(parentId);
     }	
-
+    
+    @GetMapping("/search")
+    public List<BaseContent> autocompleteBaseContent(@RequestParam("keyword") String keyword) {
+        return baseContentService.searchByName(keyword);
+    }
 }

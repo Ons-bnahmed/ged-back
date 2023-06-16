@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import com.mss.ged.config.Config;
 import com.mss.ged.dtos.RenameRequest;
 import com.mss.ged.entities.Folder;
@@ -87,5 +86,14 @@ public class FolderServiceImpl implements FolderService {
 	    // Save the new folder in the database
 	    return folderRepository.save(newFolder);
 	}
+	
+	public Folder addSubfolder(Long parentId, Folder subfolder) {
+        Folder parentFolder = folderRepository.findById(parentId)
+                .orElseThrow(() -> new RuntimeException("Parent folder not found"));
+
+        parentFolder.addSubfolder(subfolder, parentFolder);
+
+        return folderRepository.save(parentFolder);
+    }
 
 }

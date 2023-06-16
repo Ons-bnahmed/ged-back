@@ -18,5 +18,7 @@ public interface BaseContentSevice {
 	List<? extends BaseContent> findByParentId(Long parentId);
 	
 	List<? extends BaseContent> findByParentIsNull();
+	
+	public List<BaseContent> searchByName(String keyword);
 
 }

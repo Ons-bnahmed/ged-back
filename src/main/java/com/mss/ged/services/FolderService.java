@@ -19,8 +19,9 @@ public interface FolderService {
 	Folder findFolderByUuid(String uuid);
 
 	Folder renameFolder(RenameRequest data, Long id);
-	 Folder getOrCreateFolder(String folderPath);
 	
-	 
+	Folder getOrCreateFolder(String folderPath);
+	
+	Folder addSubfolder(Long parentId, Folder subfolder);
 
 }

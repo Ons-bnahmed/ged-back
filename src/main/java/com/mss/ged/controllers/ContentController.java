@@ -269,7 +269,7 @@ public class ContentController {
 
 	
 	 @PostMapping("/files/{fileId}/assign-folder/{folderId}")
-	    public ResponseEntity<String> assignFileToFolder(@PathVariable Long fileId, @PathVariable Long folderId) {
+	    public ResponseEntity<?> assignFileToFolder(@PathVariable Long fileId, @PathVariable Long folderId) {
 	        Content file = contentService.findContentById(fileId);
 	        Folder folder = folderService.findFolderById(folderId);
 
@@ -282,7 +282,7 @@ public class ContentController {
 	        file.setFolder(folder);
 	        contentService.updatedContent(fileId, file);
 
-	        return ResponseEntity.ok("File assigned to folder successfully.");
+	        return ResponseEntity.ok().build();
 	    }
 
 	

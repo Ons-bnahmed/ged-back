@@ -50,5 +50,10 @@ public class BaseContentServiceImpl implements BaseContentSevice {
 	public List<? extends BaseContent> findByParentIsNull() {
 		return repository.findAll();
 	}
+	
+	
+	 public List<BaseContent> searchByName(String keyword) {
+	        return repository.findAllByNameContainingIgnoreCase(keyword);
+	    }
 
 }

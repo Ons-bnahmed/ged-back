@@ -9,5 +9,8 @@ public interface BaseContentRepository extends JpaRepository <BaseContent, Long>
 	List<? extends BaseContent> findByParentId(Long parentId);
 	
 	List<? extends BaseContent> findByParentIsNull();
+	
+    List<BaseContent> findAllByNameContainingIgnoreCase(String keyword);
+
 
 }

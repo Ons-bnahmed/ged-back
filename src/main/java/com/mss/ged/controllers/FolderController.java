@@ -1,10 +1,13 @@
 package com.mss.ged.controllers;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,10 +17,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.mss.ged.config.Config;
 import com.mss.ged.dtos.RenameRequest;
 import com.mss.ged.entities.BaseContent;
+import com.mss.ged.entities.Content;
 import com.mss.ged.entities.Folder;
 import com.mss.ged.enums.ContentType;
 import com.mss.ged.services.FolderService;
@@ -112,4 +117,46 @@ public class FolderController {
 	    }
 	
 
+	 @PostMapping("/{parentId}/subfolders")
+	    public ResponseEntity<Folder> addSubfolder(@PathVariable Long parentId, @RequestBody Folder subfolder) {
+		 subfolder.setType(ContentType.FOLDER);
+		    final String uploadDirectory =  fileStorageConfig.getUploadDir();
+		    String folderUrl = uploadDirectory + File.separator + subfolder.getPath();
+
+		    // Set the folder URL based on the folder path
+	        // Create the directory if it doesn't exist
+	        File folderDirectory = new File(uploadDirectory + File.separator + subfolder.getName());
+	        if (!folderDirectory.exists()) {
+	            folderDirectory.mkdirs();
+	        }
+
+	        // Find or create the corresponding folder
+	        findOrCreateFolder(subfolder.getName());
+	        subfolder.setFolderUrl(folderUrl);
+	        Folder createdSubfolder = folderService.addSubfolder(parentId, subfolder);
+	        return ResponseEntity.status(HttpStatus.CREATED).body(createdSubfolder);
+	    }
+	 
+	 @GetMapping("/search/folders")
+	    public List<?> autocompleteBaseContent(@RequestParam("keyword") String keyword, @RequestParam("id") Long id) {
+		 Folder folderData = folderService.findFolderById(id);
+		 List<BaseContent> searchResults = new ArrayList<>();
+
+	        List<Folder> subfolders = folderData.getSubfolders();
+	        for (Folder subfolder : subfolders) {
+	            if (subfolder.getName().contains(keyword)) {
+	                searchResults.add(subfolder);
+	            }
+	        }
+
+	        // Search within the files
+	        List<Content> files = folderData.getFiles();
+	        for (Content file : files) {
+	            if (file.getName().contains(keyword)) {
+	                searchResults.add(file);
+	            }
+	        }
+
+	        return searchResults;
+	    }
 }
