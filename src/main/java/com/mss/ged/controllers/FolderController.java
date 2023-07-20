@@ -29,7 +29,8 @@ import com.mss.ged.services.FolderService;
 
 @RestController
 @RequestMapping("/api/folders")
-@CrossOrigin(origins = "*", exposedHeaders = "*")
+@CrossOrigin(origins = "*", maxAge = 3600)
+
 public class FolderController {
 
 	@Autowired

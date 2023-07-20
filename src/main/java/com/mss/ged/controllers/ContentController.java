@@ -42,9 +42,10 @@ import jakarta.persistence.NoResultException;
 import jakarta.persistence.TypedQuery;
 import jakarta.transaction.Transactional;
 
+@CrossOrigin(origins = "http://localhost:4200", maxAge = 3600, allowCredentials = "true")
 @RestController
 @RequestMapping("/api/contents")
-@CrossOrigin("*")
+
 public class ContentController {
 	
 	@Autowired
@@ -66,11 +67,11 @@ public class ContentController {
 	public List<Content> getAllContents() {
 		return contentService.getAllContents();
 	}
-
+ 
 	@GetMapping("/{id}")
 	public Content findContentById(@PathVariable Long id) {
 		return contentService.findContentById(id);
-	}
+    }
 
 	@DeleteMapping("/{id}")
 	public void deleteContentById(@PathVariable Long id) {
@@ -87,7 +88,7 @@ public class ContentController {
 		return contentService.renameContent(body, id);
 	}
 
-	@Transactional
+//	@Transactional
 	@PostMapping("/upload")
 	public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile multipartFile) throws IOException {
 		String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
@@ -101,12 +102,15 @@ public class ContentController {
 		Content saved = (Content) baseContentService.save(content);
 		fileStorageService.uploadFile(saved, multipartFile);
 		String filePath = fileStorageConfig.getUploadDir() + File.separator + fileName;
+		System.out.print("filePath filePath " + filePath);
         try {
         	multipartFile.transferTo(new File(filePath));
         } catch (IOException e) {
             // Handle file transfer error
         }
         content.setFileUrl(filePath);
+        baseContentService.save(content);
+        System.out.print("filePath after save " +  content.getFileUrl());
 		return new ResponseEntity<>(HttpStatus.CREATED);
 	}
 

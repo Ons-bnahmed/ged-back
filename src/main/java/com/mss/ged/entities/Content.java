@@ -85,6 +85,7 @@ public class Content extends BaseContent {
     private String originalName;
     private Long size;
     private String fileUrl;
+    
 
     public Content() {
         super();

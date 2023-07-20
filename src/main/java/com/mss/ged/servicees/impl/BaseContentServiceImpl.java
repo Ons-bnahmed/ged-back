@@ -48,7 +48,7 @@ public class BaseContentServiceImpl implements BaseContentSevice {
 
 	@Override
 	public List<? extends BaseContent> findByParentIsNull() {
-		return repository.findAll();
+		return repository.findByParentIsNull();
 	}
 	
 	

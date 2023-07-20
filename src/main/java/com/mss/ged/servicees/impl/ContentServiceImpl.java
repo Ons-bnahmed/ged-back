@@ -52,5 +52,5 @@ public class ContentServiceImpl implements ContentService {
 		content.setName(data.getFileName());
 		return this.contentRepository.save(content);
 	}
-
+	
 }
