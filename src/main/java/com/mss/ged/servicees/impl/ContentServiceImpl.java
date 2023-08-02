@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.mss.ged.dtos.RenameRequest;
 import com.mss.ged.entities.Content;
+import com.mss.ged.entities.User;
 import com.mss.ged.repositories.ContentRepository;
 import com.mss.ged.services.ContentService;
 
@@ -53,4 +54,8 @@ public class ContentServiceImpl implements ContentService {
 		return this.contentRepository.save(content);
 	}
 	
+	 public List<Content> getDeletedContentForCurrentUser(User currentUser) {
+	        // Get all the deleted content assigned to the current user from the repository
+	        return contentRepository.findByDeletedAndUser(true, currentUser);
+	    }
 }

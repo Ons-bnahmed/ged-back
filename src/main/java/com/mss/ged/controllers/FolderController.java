@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,7 +25,10 @@ import com.mss.ged.dtos.RenameRequest;
 import com.mss.ged.entities.BaseContent;
 import com.mss.ged.entities.Content;
 import com.mss.ged.entities.Folder;
+import com.mss.ged.entities.User;
 import com.mss.ged.enums.ContentType;
+import com.mss.ged.repositories.UserRepository;
+import com.mss.ged.security.JwtUtils;
 import com.mss.ged.services.FolderService;
 
 @RestController
@@ -32,6 +36,13 @@ import com.mss.ged.services.FolderService;
 @CrossOrigin(origins = "*", maxAge = 3600)
 
 public class FolderController {
+	
+	
+	@Autowired
+	JwtUtils jwtUtils;
+	
+	@Autowired
+	UserRepository userRepository;
 
 	@Autowired
 	private FolderService folderService;
@@ -65,10 +76,14 @@ public class FolderController {
 	}
 	
 	@PostMapping("/create")
-	public String createFolder(@RequestBody Folder folder) {
+	public String createFolder(@RequestBody Folder folder, @RequestHeader("Authorization") String token) {
 	    folder.setType(ContentType.FOLDER);
 	    final String uploadDirectory =  fileStorageConfig.getUploadDir();
 	    String folderUrl = uploadDirectory + File.separator + folder.getPath();
+	    
+	    String jwtToken = token.substring(7);
+        String userEmail = jwtUtils.getUserNameFromJwtToken(jwtToken);
+        User user = userRepository.findUserByUsername(userEmail);
 
 	    // Set the folder URL based on the folder path
         // Create the directory if it doesn't exist
@@ -80,6 +95,7 @@ public class FolderController {
         // Find or create the corresponding folder
         findOrCreateFolder(folder.getName());
         folder.setFolderUrl(folderUrl);
+        folder.setUser(user);
 	    folderService.save(folder);
 	    return "Folder created successfully.";
 	}
@@ -159,5 +175,19 @@ public class FolderController {
 	        }
 
 	        return searchResults;
+	    }
+	 
+	 @PatchMapping("/moveToTrash/{id}")
+	    public void moveToTrash(@PathVariable Long id) {
+	        Folder folder = folderService.findFolderById(id);
+	        // if (content == null) {
+	        //    return new ResponseEntity<>("Content not found", HttpStatus.NOT_FOUND);
+	        // }
+
+	        // Perform safe delete by updating the "deleted" field to false
+	        folder.setDeleted(true);
+	        folderService.save(folder);
+
+	       // return new ResponseEntity<>("Content deleted successfully", HttpStatus.OK);
 	    }
 }

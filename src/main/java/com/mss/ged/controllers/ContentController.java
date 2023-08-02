@@ -8,6 +8,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
@@ -23,6 +25,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -31,7 +34,10 @@ import com.mss.ged.config.Config;
 import com.mss.ged.dtos.RenameRequest;
 import com.mss.ged.entities.Content;
 import com.mss.ged.entities.Folder;
+import com.mss.ged.entities.User;
 import com.mss.ged.enums.ContentType;
+import com.mss.ged.repositories.UserRepository;
+import com.mss.ged.security.JwtUtils;
 import com.mss.ged.services.BaseContentSevice;
 import com.mss.ged.services.ContentService;
 import com.mss.ged.services.FileStorageService;
@@ -49,6 +55,9 @@ import jakarta.transaction.Transactional;
 public class ContentController {
 	
 	@Autowired
+	UserRepository userRepository;
+	
+	@Autowired
 	private ContentService contentService;
 
 	@Autowired
@@ -62,6 +71,10 @@ public class ContentController {
 	 
 	@Autowired
 	private FolderService folderService;
+	
+	
+	@Autowired
+	JwtUtils jwtUtils;
 
 	@GetMapping
 	public List<Content> getAllContents() {
@@ -77,6 +90,40 @@ public class ContentController {
 	public void deleteContentById(@PathVariable Long id) {
 		contentService.deleteContent(id);
 	}
+	
+
+	
+	
+	// @GetMapping("/trash")
+	// public ResponseEntity<List<Content>> getTrashContent(@RequestHeader("Authorization") String token) {
+	//	String jwtToken = token.substring(7);
+	//  String userEmail = jwtUtils.getUserNameFromJwtToken(jwtToken);
+	//  User user = userRepository.findUserByUsername(userEmail);  
+	//	List<Content> nonDeletedContent = contentService.getDeletedContentForCurrentUser(user);
+		//       return ResponseEntity.ok(nonDeletedContent);
+	//}
+	
+	@GetMapping("/deleted-content-for-current-user")
+    public List<Content> getDeletedContentForCurrentUser(@RequestHeader("Authorization") String token) {
+		String jwtToken = token.substring(7);
+        String userEmail = jwtUtils.getUserNameFromJwtToken(jwtToken);
+        User user = userRepository.findUserByUsername(userEmail); // Implement this method to get the current user from your authentication mechanism
+        return contentService.getDeletedContentForCurrentUser(user);
+    }
+	
+	@PatchMapping("/moveToTrash/{id}")
+    public void moveToTrash(@PathVariable Long id) {
+        Content content = contentService.findContentById(id);
+        // if (content == null) {
+        //    return new ResponseEntity<>("Content not found", HttpStatus.NOT_FOUND);
+        // }
+
+        // Perform safe delete by updating the "deleted" field to false
+        content.setDeleted(true);
+        baseContentService.save(content);
+
+       // return new ResponseEntity<>("Content deleted successfully", HttpStatus.OK);
+    }
 
 	@PutMapping("/{id}")
 	public Content update(@PathVariable Long id, @RequestBody Content content) {
@@ -90,16 +137,26 @@ public class ContentController {
 
 //	@Transactional
 	@PostMapping("/upload")
-	public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile multipartFile) throws IOException {
+	public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile multipartFile,
+			@RequestHeader("Authorization") String token) throws IOException {
 		String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
 		Content content = new Content(fileName);
 		String nameWithoutExtension = fileName.substring(0, fileName.lastIndexOf('.'));
+		String jwtToken = token.substring(7);
+        String userEmail = jwtUtils.getUserNameFromJwtToken(jwtToken);
+        User user = userRepository.findUserByUsername(userEmail);
+        System.out.println("user logged in username " + user.getUsername());
+        System.out.println("user logged in fullname " + user.getFullName());
+        System.out.println("user logged in email " + user.getEmail());
 		content.setOriginalName(fileName);
 		content.setName(nameWithoutExtension);
 		content.setSize(multipartFile.getSize());
 		content.setType(ContentType.FILE);
+		
+		System.out.println("content.getUser() " + user.getUsername());
         
 		Content saved = (Content) baseContentService.save(content);
+		
 		fileStorageService.uploadFile(saved, multipartFile);
 		String filePath = fileStorageConfig.getUploadDir() + File.separator + fileName;
 		System.out.print("filePath filePath " + filePath);
@@ -109,8 +166,8 @@ public class ContentController {
             // Handle file transfer error
         }
         content.setFileUrl(filePath);
+        content.setUser(user);
         baseContentService.save(content);
-        System.out.print("filePath after save " +  content.getFileUrl());
 		return new ResponseEntity<>(HttpStatus.CREATED);
 	}
 
@@ -222,7 +279,9 @@ public class ContentController {
 //	}
 	
 	@PostMapping("/upload/file-folder")
-	public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file, @RequestParam("folder") String folderPath) {
+	public ResponseEntity<String> uploadFileFolder(@RequestParam("file") MultipartFile file, 
+			@RequestParam("folder") String folderPath,
+			@RequestHeader("Authorization") String token) {
 
 	    try {
 	        if (file.isEmpty()) {
@@ -230,7 +289,13 @@ public class ContentController {
 	        }
 
 	        Folder folder = getFolderByName(folderPath);
+	        
+	        String jwtToken = token.substring(7);
+	        String userEmail = jwtUtils.getUserNameFromJwtToken(jwtToken);
+	        User user = userRepository.findUserByUsername(userEmail);
 
+	        System.out.println("user getEmail " + user.getEmail());
+	        
 	        if (folder == null) {
 	            // Folder does not exist, create a new one
 	            folder = new Folder();
@@ -241,6 +306,9 @@ public class ContentController {
 
 	        // Create the directory if it doesn't exist
 	        File folderDirectory = new File(fileStorageConfig.getUploadDir() + File.separator + folderPath);
+	        System.out.println("folderDirectory folderDirectory " + folderDirectory);
+	        System.out.println("!folderDirectory.exists() " + !folderDirectory.exists());
+	        System.out.println("!folderDirectory.mkdirs() " + !folderDirectory.mkdirs());
 	        if (!folderDirectory.exists()) {
 	            if (!folderDirectory.mkdirs()) {
 	                throw new RuntimeException("Failed to create the folder.");
@@ -249,6 +317,8 @@ public class ContentController {
 
 	        // Save the file in the folder directory
 	        String fileName = file.getOriginalFilename();
+	        System.out.println("fileName fileName " + fileName);
+	        
 	        Path filePath = Paths.get(folderDirectory.getAbsolutePath(), fileName);
 	        Files.write(filePath, file.getBytes());
 
@@ -260,6 +330,7 @@ public class ContentController {
 	        content.setName(nameWithoutExtension);
 	        content.setSize(file.getSize());
 	        content.setType(ContentType.FILE);
+	        content.setUser(user);
 
 	        // Add the file to the folder
 	        folder.addFile(content);

@@ -2,6 +2,7 @@ package com.mss.ged.services;
 
 import java.util.List;
 import com.mss.ged.entities.BaseContent;
+import com.mss.ged.entities.User;
 
 public interface BaseContentSevice {
 
@@ -20,5 +21,7 @@ public interface BaseContentSevice {
 	List<? extends BaseContent> findByParentIsNull();
 	
 	public List<BaseContent> searchByName(String keyword);
+	
+	List<? extends BaseContent> findByUser(User user);
 
 }

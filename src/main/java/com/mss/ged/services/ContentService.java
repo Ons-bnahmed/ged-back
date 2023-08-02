@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.mss.ged.dtos.RenameRequest;
 import com.mss.ged.entities.Content;
+import com.mss.ged.entities.User;
 
 
 public interface ContentService {
@@ -19,4 +20,6 @@ public interface ContentService {
 	Content updatedContent(Long id, Content content);
 
 	Content renameContent(RenameRequest data, Long id);
+	
+	List<Content> getDeletedContentForCurrentUser(User currentUser);
 }

@@ -4,11 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.mss.ged.enums.ContentType;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 
@@ -26,6 +29,30 @@ public class BaseContent extends BaseEntity<Long> {
 	@JsonIgnore
 	@OneToMany(mappedBy = "parent", fetch = FetchType.LAZY)
 	private List<BaseContent> childs = new ArrayList<>();
+	
+
+	public Boolean getDeleted() {
+		return deleted;
+	}
+
+	public void setDeleted(Boolean deleted) {
+		this.deleted = deleted;
+	}
+
+	private Boolean deleted = false;
+	
+	
+	@ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
+	public User getUser() {
+		return user;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
+	}
 
 	@ManyToOne
 	private BaseContent parent;

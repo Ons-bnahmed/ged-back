@@ -86,8 +86,14 @@ public class Content extends BaseContent {
     private Long size;
     private String fileUrl;
     
+//    @ManyToOne
+//    @JoinColumn(name = "user_id")
+//    private User user;
+//    
+//
+//    
 
-    public Content() {
+	public Content() {
         super();
     }
 

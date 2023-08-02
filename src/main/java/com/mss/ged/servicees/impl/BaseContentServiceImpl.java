@@ -4,6 +4,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.mss.ged.entities.BaseContent;
+import com.mss.ged.entities.User;
 import com.mss.ged.repositories.BaseContentRepository;
 import com.mss.ged.services.BaseContentSevice;
 
@@ -55,5 +56,10 @@ public class BaseContentServiceImpl implements BaseContentSevice {
 	 public List<BaseContent> searchByName(String keyword) {
 	        return repository.findAllByNameContainingIgnoreCase(keyword);
 	    }
+	 
+	 @Override
+	 public List<? extends BaseContent> findByUser(User user) {
+	      return repository.findByUser(user);
+	 }
 
 }

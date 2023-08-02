@@ -6,8 +6,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 
@@ -31,6 +29,7 @@ public class Folder extends BaseContent {
 	@JsonIgnoreProperties("parent")
 	 @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
 	 private List<Folder> subfolders = new ArrayList<>();
+	
 	
 	 @Column(name = "folder_url")
 	 private String folderUrl;
