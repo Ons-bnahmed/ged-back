@@ -120,6 +120,31 @@ public class ContentController {
 
         // Perform safe delete by updating the "deleted" field to false
         content.setDeleted(true);
+        content.setAction("Deleted");
+        baseContentService.save(content);
+
+       // return new ResponseEntity<>("Content deleted successfully", HttpStatus.OK);
+    }
+	
+	@PatchMapping("/addToFavorite/{id}")
+    public void addToFavorite(@PathVariable Long id) {
+        Content content = contentService.findContentById(id);
+        content.setIsFavorite(true);
+        content.setAction("Added to favorites");
+        baseContentService.save(content);
+
+    }
+	
+	@PatchMapping("/removeFromFavorite/{id}")
+    public void removeFromFavorite(@PathVariable Long id) {
+        Content content = contentService.findContentById(id);
+        // if (content == null) {
+        //    return new ResponseEntity<>("Content not found", HttpStatus.NOT_FOUND);
+        // }
+
+        // Perform safe delete by updating the "deleted" field to false
+        content.setIsFavorite(false);
+        content.setAction("Removed from favorites");
         baseContentService.save(content);
 
        // return new ResponseEntity<>("Content deleted successfully", HttpStatus.OK);
@@ -127,7 +152,7 @@ public class ContentController {
 
 	@PutMapping("/{id}")
 	public Content update(@PathVariable Long id, @RequestBody Content content) {
-		return contentService.updatedContent(id, content);
+		return contentService.updatedContent(id, content, "");
 	}
 
 	@PatchMapping("/rename/{id}")
@@ -167,6 +192,7 @@ public class ContentController {
         }
         content.setFileUrl(filePath);
         content.setUser(user);
+        content.setAction("Created");
         baseContentService.save(content);
 		return new ResponseEntity<>(HttpStatus.CREATED);
 	}
@@ -306,9 +332,6 @@ public class ContentController {
 
 	        // Create the directory if it doesn't exist
 	        File folderDirectory = new File(fileStorageConfig.getUploadDir() + File.separator + folderPath);
-	        System.out.println("folderDirectory folderDirectory " + folderDirectory);
-	        System.out.println("!folderDirectory.exists() " + !folderDirectory.exists());
-	        System.out.println("!folderDirectory.mkdirs() " + !folderDirectory.mkdirs());
 	        if (!folderDirectory.exists()) {
 	            if (!folderDirectory.mkdirs()) {
 	                throw new RuntimeException("Failed to create the folder.");
@@ -355,7 +378,7 @@ public class ContentController {
 	        folder.addFile(file);
 	        folderService.save(folder);
 	        file.setFolder(folder);
-	        contentService.updatedContent(fileId, file);
+	        contentService.updatedContent(fileId, file, "Transfered to " + folder.getName());
 
 	        return ResponseEntity.ok().build();
 	    }

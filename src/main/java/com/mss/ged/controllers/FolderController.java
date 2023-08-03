@@ -96,6 +96,7 @@ public class FolderController {
         findOrCreateFolder(folder.getName());
         folder.setFolderUrl(folderUrl);
         folder.setUser(user);
+        folder.setAction("Created");
 	    folderService.save(folder);
 	    return "Folder created successfully.";
 	}
@@ -186,8 +187,26 @@ public class FolderController {
 
 	        // Perform safe delete by updating the "deleted" field to false
 	        folder.setDeleted(true);
+	        folder.setAction("Deleted");
 	        folderService.save(folder);
 
 	       // return new ResponseEntity<>("Content deleted successfully", HttpStatus.OK);
+	    }
+	 
+	 @PatchMapping("/addToFavorite/{id}")
+	    public void addToFavorite(@PathVariable Long id) {
+		 Folder folder = folderService.findFolderById(id);
+	        folder.setIsFavorite(true);
+	        folder.setAction("Added to favorites");
+	        folderService.save(folder);
+
+	    }
+		
+		@PatchMapping("/removeFromFavorite/{id}")
+	    public void removeFromFavorite(@PathVariable Long id) {
+			Folder content = folderService.findFolderById(id);
+	        content.setIsFavorite(false);
+	        content.setAction("Removed from favorites");
+	        folderService.save(content);
 	    }
 }

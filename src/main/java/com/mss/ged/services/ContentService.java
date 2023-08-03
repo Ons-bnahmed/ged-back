@@ -17,7 +17,7 @@ public interface ContentService {
 	
 	void deleteContent(Long id);
 
-	Content updatedContent(Long id, Content content);
+	Content updatedContent(Long id, Content content, String actionName);
 
 	Content renameContent(RenameRequest data, Long id);
 	

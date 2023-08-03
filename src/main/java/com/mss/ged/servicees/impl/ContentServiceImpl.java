@@ -32,9 +32,10 @@ public class ContentServiceImpl implements ContentService {
 	}
 
 	@Override
-	public Content updatedContent(Long id, Content content) {
+	public Content updatedContent(Long id, Content content, String actionName) {
 		Content contentUpdate = contentRepository.findById(id).get();
-		contentUpdate.setName(content.getName());		
+		contentUpdate.setName(content.getName());
+		contentUpdate.setAction(actionName);
 		return contentRepository.save(contentUpdate);
 	}
 
@@ -51,6 +52,7 @@ public class ContentServiceImpl implements ContentService {
 		return null ;
 		Content content = dataFromDb.get();
 		content.setName(data.getFileName());
+		content.setAction("Edited");
 		return this.contentRepository.save(content);
 	}
 	

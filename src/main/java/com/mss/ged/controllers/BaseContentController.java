@@ -102,6 +102,22 @@ public class BaseContentController {
 	}
 	
 	
+	@GetMapping("/history/me")
+	public List<? extends BaseContent> getHistory(@RequestHeader("Authorization") String token) {
+		String jwtToken = token.substring(7);
+        String userEmail = jwtUtils.getUserNameFromJwtToken(jwtToken);
+        User user = userRepository.findUserByUsername(userEmail);
+
+	    System.out.println("Logged-in user: " + user.getUsername());
+
+	    // Assuming 'baseContentService' has a method to fetch BaseContent by the authenticated user
+	    List<? extends BaseContent> baseContents = baseContentService.findByUser(user);
+	    
+
+	    return baseContents;
+	}
+	
+	
 	@GetMapping("/trash/me")
     public  List<? extends BaseContent> getTrashContent(@RequestHeader("Authorization") String token) {
 		String jwtToken = token.substring(7);
@@ -119,6 +135,26 @@ public class BaseContentController {
 
 	    return activeContents;
     }
+	
+	@GetMapping("/favorite/me")
+    public  List<? extends BaseContent> getFavoriteContent(@RequestHeader("Authorization") String token) {
+		String jwtToken = token.substring(7);
+        String userEmail = jwtUtils.getUserNameFromJwtToken(jwtToken);
+        User user = userRepository.findUserByUsername(userEmail);
+
+	    System.out.println("Logged-in user: " + user.getUsername());
+
+	    // Assuming 'baseContentService' has a method to fetch BaseContent by the authenticated user
+	    List<? extends BaseContent> baseContents = baseContentService.findByUser(user);
+	    List<? extends BaseContent> favoriteList = baseContents.stream()
+	            .filter(content -> content.getIsFavorite()) // Assuming isDeleted is the method that returns the 'deleted' status
+	            .collect(Collectors.toList());
+	    
+
+	    return favoriteList;
+    }
+	
+	
 	
 	@GetMapping("/{parentId}")
     public List<? extends BaseContent> getBaseContentsByParentId(@PathVariable Long parentId) {

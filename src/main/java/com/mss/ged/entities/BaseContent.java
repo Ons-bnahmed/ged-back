@@ -1,7 +1,13 @@
 package com.mss.ged.entities;
 
+import java.sql.Date;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.mss.ged.enums.ContentType;
 
@@ -41,7 +47,29 @@ public class BaseContent extends BaseEntity<Long> {
 
 	private Boolean deleted = false;
 	
+	private String action;
 	
+
+	public Boolean getIsFavorite() {
+		return isFavorite;
+	}
+
+	public void setIsFavorite(Boolean isFavorite) {
+		this.isFavorite = isFavorite;
+	}
+	
+	private Boolean isFavorite = false;
+	
+	
+
+	public String getAction() {
+		return action;
+	}
+
+	public void setAction(String action) {
+		this.action = action;
+	}
+
 	@ManyToOne
     @JoinColumn(name = "user_id")
     private User user;

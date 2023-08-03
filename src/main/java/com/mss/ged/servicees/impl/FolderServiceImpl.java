@@ -47,6 +47,7 @@ public class FolderServiceImpl implements FolderService {
 	public Folder updatedFolder(Long id, Folder folder) {
 		Folder folderUpdate = folderRepository.findById(id).orElse(null);
 		folderUpdate.setName(folder.getName());
+		folderUpdate.setAction("Edited");
 		return folderRepository.save(folderUpdate);
 	}
 
@@ -62,6 +63,7 @@ public class FolderServiceImpl implements FolderService {
 			return null;
 		Folder folder = dataFromDb.get();
 		folder.setName(data.getFileName());
+		folder.setAction("Edited");
 		return this.folderRepository.save(folder);
 	}
 	
