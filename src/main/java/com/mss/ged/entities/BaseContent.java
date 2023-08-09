@@ -70,7 +70,7 @@ public class BaseContent extends BaseEntity<Long> {
 		this.action = action;
 	}
 
-	@ManyToOne
+	@ManyToOne(cascade = {CascadeType.ALL, CascadeType.REMOVE})
     @JoinColumn(name = "user_id")
     private User user;
 
