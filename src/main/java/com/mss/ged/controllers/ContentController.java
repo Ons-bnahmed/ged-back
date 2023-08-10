@@ -7,6 +7,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -35,7 +36,9 @@ import com.mss.ged.dtos.RenameRequest;
 import com.mss.ged.entities.Content;
 import com.mss.ged.entities.Folder;
 import com.mss.ged.entities.User;
+import com.mss.ged.entities.userHistory;
 import com.mss.ged.enums.ContentType;
+import com.mss.ged.repositories.UserHistoryRepository;
 import com.mss.ged.repositories.UserRepository;
 import com.mss.ged.security.JwtUtils;
 import com.mss.ged.services.BaseContentSevice;
@@ -71,6 +74,9 @@ public class ContentController {
 	 
 	@Autowired
 	private FolderService folderService;
+	
+	@Autowired
+	UserHistoryRepository userHistoryRepository;
 	
 	
 	@Autowired
@@ -112,15 +118,24 @@ public class ContentController {
     }
 	
 	@PatchMapping("/moveToTrash/{id}")
-    public void moveToTrash(@PathVariable Long id) {
+    public void moveToTrash(@PathVariable Long id, @RequestHeader("Authorization") String token) {
         Content content = contentService.findContentById(id);
+        userHistory userHistoryInstance = new userHistory();
         // if (content == null) {
         //    return new ResponseEntity<>("Content not found", HttpStatus.NOT_FOUND);
         // }
-
+        String jwtToken = token.substring(7);
+        String userEmail = jwtUtils.getUserNameFromJwtToken(jwtToken);
+        User user = userRepository.findUserByUsername(userEmail);
         // Perform safe delete by updating the "deleted" field to false
         content.setDeleted(true);
         content.setAction("Deleted");
+        List<Content> contentList = new ArrayList<>();
+        contentList.add(content);
+        userHistoryInstance.setHistoryContents(contentList);
+        userHistoryInstance.setAction("Deleted");
+        userHistoryInstance.setUser(user);
+        userHistoryRepository.save(userHistoryInstance);
         baseContentService.save(content);
 
        // return new ResponseEntity<>("Content deleted successfully", HttpStatus.OK);
@@ -164,6 +179,7 @@ public class ContentController {
 	@PostMapping("/upload")
 	public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile multipartFile,
 			@RequestHeader("Authorization") String token) throws IOException {
+		userHistory userHistoryInstance = new userHistory();
 		String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
 		Content content = new Content(fileName);
 		String nameWithoutExtension = fileName.substring(0, fileName.lastIndexOf('.'));
@@ -193,6 +209,12 @@ public class ContentController {
         content.setFileUrl(filePath);
         content.setUser(user);
         content.setAction("Created");
+        List<Content> contentList = new ArrayList<>();
+        contentList.add(content);
+        userHistoryInstance.setHistoryContents(contentList);
+        userHistoryInstance.setAction("Created");
+        userHistoryInstance.setUser(user);
+        userHistoryRepository.save(userHistoryInstance);
         baseContentService.save(content);
 		return new ResponseEntity<>(HttpStatus.CREATED);
 	}
