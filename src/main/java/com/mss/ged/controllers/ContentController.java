@@ -130,9 +130,8 @@ public class ContentController {
         // Perform safe delete by updating the "deleted" field to false
         content.setDeleted(true);
         content.setAction("Deleted");
-        List<Content> contentList = new ArrayList<>();
-        contentList.add(content);
-        userHistoryInstance.setHistoryContents(contentList);
+        
+        userHistoryInstance.setHistoryContents(content);
         userHistoryInstance.setAction("Deleted");
         userHistoryInstance.setUser(user);
         userHistoryRepository.save(userHistoryInstance);
@@ -209,9 +208,7 @@ public class ContentController {
         content.setFileUrl(filePath);
         content.setUser(user);
         content.setAction("Created");
-        List<Content> contentList = new ArrayList<>();
-        contentList.add(content);
-        userHistoryInstance.setHistoryContents(contentList);
+        userHistoryInstance.setHistoryContents(content);
         userHistoryInstance.setAction("Created");
         userHistoryInstance.setUser(user);
         userHistoryRepository.save(userHistoryInstance);

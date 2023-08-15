@@ -26,7 +26,11 @@ import com.mss.ged.entities.BaseContent;
 import com.mss.ged.entities.Content;
 import com.mss.ged.entities.Folder;
 import com.mss.ged.entities.User;
+import com.mss.ged.entities.userFolderHistory;
+import com.mss.ged.entities.userHistory;
 import com.mss.ged.enums.ContentType;
+import com.mss.ged.repositories.UserFolderHistory;
+import com.mss.ged.repositories.UserHistoryRepository;
 import com.mss.ged.repositories.UserRepository;
 import com.mss.ged.security.JwtUtils;
 import com.mss.ged.services.FolderService;
@@ -36,6 +40,9 @@ import com.mss.ged.services.FolderService;
 @CrossOrigin(origins = "*", maxAge = 3600)
 
 public class FolderController {
+	
+	@Autowired
+	UserFolderHistory UserFolderHistoryRepository;
 	
 	
 	@Autowired
@@ -84,7 +91,7 @@ public class FolderController {
 	    String jwtToken = token.substring(7);
         String userEmail = jwtUtils.getUserNameFromJwtToken(jwtToken);
         User user = userRepository.findUserByUsername(userEmail);
-
+        userFolderHistory userFolderHistoryInstance = new userFolderHistory();
 	    // Set the folder URL based on the folder path
         // Create the directory if it doesn't exist
         File folderDirectory = new File(uploadDirectory + File.separator + folder.getName());
@@ -97,7 +104,12 @@ public class FolderController {
         folder.setFolderUrl(folderUrl);
         folder.setUser(user);
         folder.setAction("Created");
-	    folderService.save(folder);
+	    
+        userFolderHistoryInstance.setHistoryFolder(folder);
+        userFolderHistoryInstance.setAction("Created");
+        userFolderHistoryInstance.setUser(user);
+        UserFolderHistoryRepository.save(userFolderHistoryInstance);
+        folderService.save(folder);
 	    return "Folder created successfully.";
 	}
 	

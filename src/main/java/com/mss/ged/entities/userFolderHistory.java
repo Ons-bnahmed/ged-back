@@ -1,11 +1,8 @@
 package com.mss.ged.entities;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -17,26 +14,25 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 
 @Entity
-public class userHistory {
-	
+public class userFolderHistory {
 	  @Id
 	  @GeneratedValue(strategy = GenerationType.IDENTITY)
 	  private Long id;
 
 
 	  @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-	    @JoinTable(name = "user_history_contents",
-	               joinColumns = @JoinColumn(name = "user_history_id"),
-	               inverseJoinColumns = @JoinColumn(name = "content_id"))
-	private Content historyContents;
+	  @JoinTable(name = "user__folder_history_contents",
+	             joinColumns = @JoinColumn(name = "user_history_id"),
+	             inverseJoinColumns = @JoinColumn(name = "folder_id"))
+	private Folder historyFolder;
 	
 
-	public Content getHistoryContents() {
-		return historyContents;
+	public Folder getHistoryFolder() {
+		return historyFolder;
 	}
 
-	public void setHistoryContents(Content historyContents) {
-		this.historyContents = historyContents;
+	public void setHistoryFolder(Folder historyFolder) {
+		this.historyFolder = historyFolder;
 	}
 
 	private String action;
@@ -50,8 +46,8 @@ public class userHistory {
 	}
 
 	@ManyToOne(cascade = {CascadeType.ALL, CascadeType.REMOVE})
-    @JoinColumn(name = "user_id")
-    private User user;
+  @JoinColumn(name = "user_id")
+  private User user;
 
 	public User getUser() {
 		return user;
@@ -60,5 +56,6 @@ public class userHistory {
 	public void setUser(User user) {
 		this.user = user;
 	}
+
 
 }

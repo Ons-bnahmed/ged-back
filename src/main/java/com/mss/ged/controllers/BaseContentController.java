@@ -142,8 +142,6 @@ public class BaseContentController {
         String userEmail = jwtUtils.getUserNameFromJwtToken(jwtToken);
         User user = userRepository.findUserByUsername(userEmail);
 
-	    System.out.println("Logged-in user: " + user.getUsername());
-
 	    // Assuming 'baseContentService' has a method to fetch BaseContent by the authenticated user
 	    List<? extends BaseContent> baseContents = baseContentService.findByUser(user);
 	    List<? extends BaseContent> favoriteList = baseContents.stream()
